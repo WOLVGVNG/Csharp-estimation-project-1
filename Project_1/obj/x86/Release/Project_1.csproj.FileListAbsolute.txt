@@ -1,0 +1,4 @@
+/home/wolvgvng/Projects/Algorytmy_i_struktury_danych/Project_1/Project_1/obj/x86/Release/Project_1.csproj.CoreCompileInputs.cache
+/home/wolvgvng/Projects/Algorytmy_i_struktury_danych/Project_1/Project_1/bin/Release/Project_1.exe
+/home/wolvgvng/Projects/Algorytmy_i_struktury_danych/Project_1/Project_1/obj/x86/Release/Project_1.exe
+/home/wolvgvng/Projects/Algorytmy_i_struktury_danych/Project_1/Project_1/obj/x86/Release/Project_1.csprojAssemblyReference.cache
