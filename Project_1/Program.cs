@@ -5,42 +5,78 @@ namespace Project_1
 {
     class MainClass
     {
-        static ulong OpAssignment;
-        static ulong OpComparisonLT;
-        static ulong OpIncrement;
-        static ulong OpComparisonEQ;
+        static ulong NumberOfOperations;
         static double ElapsedSeconds;
         static ulong NumberOfTests;
 
+        static bool LinearSearchInstr(int[] Vector, int Number)
+        {
+            for (int i = 0; i < Vector.Length; i++)
+            {
+                NumberOfOperations++;
+                if (i == Number) return true;
+            }
+            return false;
+        }
+
+        static bool LinearSearchTime(int[] Vector, int Number)
+        {
+            for (int i = 0; i < Vector.Length; i++)
+            {
+                if (i == Number) return true;
+            }
+            return false;
+        }
+
+        static bool BinarySearchInstr(int[] Vector, int Number)
+        {
+            int Left = 0, Right = Vector.Length - 1, Middle;
+            while (Left <= Right)
+            {
+                Middle = (Left + Right) / 2;
+
+                NumberOfOperations++;
+                if (Vector[Middle] == Number)return true;
+
+                if (Vector[Middle] > Number) Right = Middle - 1;
+                else Left = Middle + 1;
+
+            }
+            return false;
+        }
+
+        static bool BinarySearchTime(int [] Vector, int Number)
+        {
+            int Left = 0, Right = Vector.Length - 1, Middle;
+            while (Left <= Right)
+            {
+                Middle = (Left + Right) / 2;
+
+                if (Vector[Middle] == Number) return true;
+
+                if (Vector[Middle] > Number) Right = Middle - 1;
+                else Left = Middle + 1;
+
+            }
+            return false;
+        }
 
         //1. LinearMaxInstr -----------------------------------------------------------------------------------
-        static bool LinearMaxInstr(int[] Vector, int Number)
+        static void LinearMaxInstr(int[] Vector)
         {
-            OpAssignment = OpComparisonLT = 1;
-            for (int i = 0; i < Vector.Length; i++, OpIncrement++)
-            {
-                OpComparisonEQ++;
-                if (i == Number) return true;
-                OpComparisonLT++;
-            }
-            return false;
+            LinearSearchInstr(Vector, Vector.Length - 1);
         }
-
 
         //2. LinearMaxTime  -----------------------------------------------------------------------------------
-        static bool LinearMaxTime(int[] Vector, int Number)
+        static void LinearMaxTime(int[] Vector)
         {
             long ElapsedTime = 0, MinTime = long.MaxValue, MaxTime = long.MinValue, IterationElapsedTime;
             for (int NumberOfControlTests = 0; NumberOfControlTests < 12; NumberOfControlTests++)
             {
                 long StartingTime = Stopwatch.GetTimestamp();
-
-                for (int i = 0; i < Vector.Length; i++)
-                {
-                    if (i == Number) return true;
-                }
-
+                LinearSearchTime(Vector, Vector.Length - 1);
                 long EndingTime = Stopwatch.GetTimestamp();
+
                 IterationElapsedTime = EndingTime - StartingTime;
                 ElapsedTime += IterationElapsedTime;
 
@@ -50,137 +86,62 @@ namespace Project_1
 
             ElapsedTime -= (MinTime + MaxTime);
             ElapsedSeconds = ElapsedTime * (1.0 / (10 * Stopwatch.Frequency));
-
-            return false;
         }
-
-
-
-
-        /*
-        static bool LinearMaxTime(int[] Vector, int Number)
-        {
-            long StartingTime = Stopwatch.GetTimestamp();
-
-            for (int i = 0; i < Vector.Length; i++)
-            {
-                if (i == Number) return true;
-            }
-
-            long EndingTime = Stopwatch.GetTimestamp();
-            long ElapsedTime = EndingTime - StartingTime;
-            ElapsedSeconds = ElapsedTime * (1.0 / Stopwatch.Frequency);
-
-            return false;
-        }*/       
-
+ 
         //3. LinearAvgInstr -----------------------------------------------------------------------------------
-        static bool LinearAvgInstr(int[] Vector, int Number)
+        static void LinearAvgInstr(int[] Vector)
         {
-            OpAssignment++;
-            OpComparisonLT++;
-            for (int i =0; i < Vector.Length; i++, OpIncrement++)
+            for (int k = 0; k < Vector.Length; k += 1000000)
             {
-                OpComparisonEQ++;
-                if (i == Number) return true;
-                OpComparisonLT++;
+                NumberOfTests++;
+                LinearSearchInstr(Vector, k);
             }
-            return false;
+            NumberOfOperations = (NumberOfOperations / NumberOfTests);
         }
-
 
         //4. LinearAvgTime  -----------------------------------------------------------------------------------
-        static bool LinearAvgTime(int[] Vector, int Number)
+        static void LinearAvgTime(int[] Vector)
         {
-            long ElapsedTime = 0, MinTime = long.MaxValue, MaxTime = long.MinValue, IterationElapsedTime;
-            for (int NumberOfControlTests = 0; NumberOfControlTests < 12; NumberOfControlTests++)
+            for (int k = 0; k < Vector.Length; k += 1000000)
             {
-                long StartingTime = Stopwatch.GetTimestamp();
+                NumberOfTests++;
+                long ElapsedTime = 0, MinTime = long.MaxValue, MaxTime = long.MinValue, IterationElapsedTime;
 
-                for (int i = 0; i < Vector.Length; i++)
+                for (int NumberOfControlTests = 0; NumberOfControlTests < 12; NumberOfControlTests++)
                 {
-                    if (i == Number) return true;
+                    long StartingTime = Stopwatch.GetTimestamp();
+
+                    LinearSearchTime(Vector, k);
+
+                    long EndingTime = Stopwatch.GetTimestamp();
+                    IterationElapsedTime = EndingTime - StartingTime;
+                    ElapsedTime += IterationElapsedTime;
+
+                    if (IterationElapsedTime < MinTime) MinTime = IterationElapsedTime;
+                    if (IterationElapsedTime > MaxTime) MaxTime = IterationElapsedTime;
                 }
 
-                long EndingTime = Stopwatch.GetTimestamp();
-                IterationElapsedTime = EndingTime - StartingTime;
-                ElapsedTime += IterationElapsedTime;
-
-                if (IterationElapsedTime < MinTime) MinTime = IterationElapsedTime;
-                if (IterationElapsedTime > MaxTime) MaxTime = IterationElapsedTime;
+                ElapsedTime -= (MinTime + MaxTime);
+                ElapsedSeconds += ElapsedTime * (1.0 / (10 * Stopwatch.Frequency));
             }
-
-            ElapsedTime -= (MinTime + MaxTime);
-            ElapsedSeconds += ElapsedTime * (1.0 / (10 * Stopwatch.Frequency));
-
-            return false;
+            ElapsedSeconds = (ElapsedSeconds / NumberOfTests);
         }
-
-
-        /*
-        static bool LinearAvgTime(int[] Vector, int Number)
-        {
-            long StartingTime = Stopwatch.GetTimestamp();
-
-            for (int i = 0; i < Vector.Length; i++)
-            {
-                if (i == Number)
-                {
-                    return true;
-                }
-
-            }
-
-            long EndingTime = Stopwatch.GetTimestamp();
-            long ElapsedTime = EndingTime - StartingTime;
-            ElapsedSeconds = ElapsedTime * (1.0 / Stopwatch.Frequency);
-
-            return false;
-        }
-        */
-
 
         //5. BinaryMaxInstr -----------------------------------------------------------------------------------
-        static bool BinaryMaxInstr(int[] Vector, int Number)
+        static void BinaryMaxInstr(int[] Vector)
         {
-            OpAssignment = 2;
-            OpComparisonLT = 1;
-            int Left = 0, Right = Vector.Length - 1, Middle;
-            while (Left <= Right)
-            {
-                OpAssignment++;
-                Middle = (Left + Right) / 2;
-
-                OpComparisonEQ++;
-                if (Vector[Middle] == Number) return true;
-
-                OpComparisonLT++;
-                OpAssignment++;
-                if (Vector[Middle] > Number) Right = Middle - 1;
-                else Left = Middle + 1;
-
-                OpComparisonLT++;
-            }
-            return false;
+            BinarySearchInstr(Vector, Vector.Length - 1);
         }
 
-
         //6. BinaryMaxTime  -----------------------------------------------------------------------------------
-        static bool BinaryMaxTime(int[] Vector, int Number)
+        static void BinaryMaxTime(int[] Vector)
         {
             long ElapsedTime = 0, MinTime = long.MaxValue, MaxTime = long.MinValue, IterationElapsedTime;
             for (int NumberOfControlTests = 0; NumberOfControlTests < 12; NumberOfControlTests++)
             {
                 long StartingTime = Stopwatch.GetTimestamp();
 
-                int Left = 0, Right = Vector.Length - 1, Middle;
-                while (Left <= Right)
-                {
-                    Middle = (Left + Right) / 2;
-                    if (Vector[Middle] == Number) return true;
-                    if (Vector[Middle] > Number) Right = Middle - 1;
-                    else Left = Middle + 1;
-                }
+                BinarySearchTime(Vector, Vector.Length - 1);
 
                 long EndingTime = Stopwatch.GetTimestamp();
                 IterationElapsedTime = EndingTime - StartingTime;
@@ -192,111 +153,48 @@ namespace Project_1
 
             ElapsedTime -= (MinTime + MaxTime);
             ElapsedSeconds = ElapsedTime * (1.0 / (10 * Stopwatch.Frequency));
-
-            return false;
         }
-
-
-        /*static bool BinaryMaxTime(int[] Vector, int Number)
-        {
-            long StartingTime = Stopwatch.GetTimestamp();
-
-            int Left = 0, Right = Vector.Length - 1, Middle;
-            while (Left <= Right)
-            {
-                Middle = (Left + Right) / 2;
-                if (Vector[Middle] == Number) return true;
-                if (Vector[Middle] > Number) Right = Middle - 1;
-                else Left = Middle + 1;
-            }
-
-            long EndingTime = Stopwatch.GetTimestamp();
-            long ElapsedTime = EndingTime - StartingTime;
-            ElapsedSeconds = ElapsedTime * (1.0 / Stopwatch.Frequency);
-
-            return false;
-        }*/
-
 
         //7. BinaryAvgInstr -----------------------------------------------------------------------------------
-        static bool BinaryAvgInstr(int[] Vector, int Number)
+        static void BinaryAvgInstr(int[] Vector)
         {
-            OpAssignment += 2;
-            OpComparisonLT += 1;
-            int Left = 0, Right = Vector.Length - 1, Middle;
-            while (Left <= Right)
+            for (int k = 0; k < Vector.Length; k += 1000000)
             {
-                OpAssignment++;
-                Middle = (Left + Right) / 2;
-
-                OpComparisonEQ++;
-                if (Vector[Middle] == Number) return true;
-
-                OpComparisonLT++;
-                OpAssignment++;
-                if (Vector[Middle] > Number) Right = Middle - 1;
-                else Left = Middle + 1;
-
-                OpComparisonLT++;
+                NumberOfTests++;
+                BinarySearchInstr(Vector, k);
             }
-            return false;
+            NumberOfOperations = (NumberOfOperations / NumberOfTests);
         }
-
 
         //8. BinaryAvgTime  -----------------------------------------------------------------------------------
-        static bool BinaryAvgTime(int[] Vector, int Number)
+        static void BinaryAvgTime(int[] Vector)
         {
-            long ElapsedTime = 0, MinTime = long.MaxValue, MaxTime = long.MinValue, IterationElapsedTime;
-            for (int NumberOfControlTests = 0; NumberOfControlTests < 12; NumberOfControlTests++)
+            for (int k = 0; k < Vector.Length; k += 1000000)
             {
-                long StartingTime = Stopwatch.GetTimestamp();
+                NumberOfTests++;
+                long ElapsedTime = 0, MinTime = long.MaxValue, MaxTime = long.MinValue, IterationElapsedTime;
 
-                int Left = 0, Right = Vector.Length - 1, Middle;
-                while (Left <= Right)
+                for (int NumberOfControlTests = 0; NumberOfControlTests < 12; NumberOfControlTests++)
                 {
-                    Middle = (Left + Right) / 2;
-                    if (Vector[Middle] == Number) return true;
-                    if (Vector[Middle] > Number) Right = Middle - 1;
-                    else Left = Middle + 1;
+                    long StartingTime = Stopwatch.GetTimestamp();
+
+                    BinarySearchTime(Vector, k);
+
+                    long EndingTime = Stopwatch.GetTimestamp();
+                    IterationElapsedTime = EndingTime - StartingTime;
+                    ElapsedTime += IterationElapsedTime;
+
+                    if (IterationElapsedTime < MinTime) MinTime = IterationElapsedTime;
+                    if (IterationElapsedTime > MaxTime) MaxTime = IterationElapsedTime;
                 }
 
-                long EndingTime = Stopwatch.GetTimestamp();
-                IterationElapsedTime = EndingTime - StartingTime;
-                ElapsedTime += IterationElapsedTime;
-
-                if (IterationElapsedTime < MinTime) MinTime = IterationElapsedTime;
-                if (IterationElapsedTime > MaxTime) MaxTime = IterationElapsedTime;
+                ElapsedTime -= (MinTime + MaxTime);
+                ElapsedSeconds += ElapsedTime * (1.0 / (10 * Stopwatch.Frequency));
             }
-
-            ElapsedTime -= (MinTime + MaxTime);
-            ElapsedSeconds += ElapsedTime * (1.0 / (10 * Stopwatch.Frequency));
-
-            return false;
+            ElapsedSeconds = (ElapsedSeconds / NumberOfTests);
         }
 
-        /*static bool BinaryAvgTime(int[] Vector, int Number)
-        {
-            long StartingTime = Stopwatch.GetTimestamp();
-
-            int Left = 0, Right = Vector.Length - 1, Middle;
-            while (Left <= Right)
-            {
-                Middle = (Left + Right) / 2;
-                if (Vector[Middle] == Number) return true;
-                if (Vector[Middle] > Number) Right = Middle - 1;
-                else Left = Middle + 1;
-            }
-
-            long EndingTime = Stopwatch.GetTimestamp();
-            long ElapsedTime = EndingTime - StartingTime;
-            ElapsedSeconds = ElapsedTime * (1.0 / Stopwatch.Frequency);
-
-            return false;
-        }*/
-
-
-
-
+        //------- MAIN -----------------------------------------------------------------------
         public static void Main(string[] args)
         {
             int choice = 0;
@@ -324,7 +222,14 @@ namespace Project_1
                 choice = int.Parse(Console.ReadLine());
                 Console.WriteLine("\n\n");
 
-                if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5 || choice == 6 || choice == 7 || choice == 8)
+                if (choice == 1
+                    || choice == 2
+                    || choice == 3
+                    || choice == 4
+                    || choice == 5
+                    || choice == 6
+                    || choice == 7
+                    || choice == 8)
                 {
                     switch (choice)
                     {
@@ -332,14 +237,14 @@ namespace Project_1
                         case 3:
                         case 5:
                         case 7:
-                            Console.WriteLine("n\t\t\tOpAssignment\tOpComparisonLT\t\tOpIncrement\t\tOpComparisonEQ");
+                            Console.WriteLine("n\t\t\tOperations");
                             break;
 
                         case 2:
                         case 4:
                         case 6:
                         case 8:
-                            Console.WriteLine("n\t\tElapsedSeconds");
+                            Console.WriteLine("n\t\tElapsed seconds");
                             break;
                     }
 
@@ -352,79 +257,51 @@ namespace Project_1
                             Vector[j] = j;
                         }
 
-                        OpAssignment = 0;
-                        OpComparisonLT = 0;
-                        OpIncrement = 0;
-                        OpComparisonEQ = 0;
+                        NumberOfOperations = 0;
                         ElapsedSeconds = 0;
                         NumberOfTests = 0;
 
+                        // ----- MIEJSCE WYWYOŁYWANIA FUNKCJI ------------------------------------------------------------
                         switch (choice)
                         {
                             case 1:
-                                LinearMaxInstr(Vector, ArraySize[i]);
-                                Console.WriteLine("{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}", Vector.Length, OpAssignment, OpComparisonLT, OpIncrement, OpComparisonEQ);
+                                LinearMaxInstr(Vector);
+                                Console.WriteLine("{0}\t\t{1}", Vector.Length, NumberOfOperations);
                                 break;
 
                             case 2:
-                                LinearMaxTime(Vector, ArraySize[i]);
-                                Console.WriteLine("{0}\t{1}", Vector.Length, ElapsedSeconds);
+                                LinearMaxTime(Vector);
+                                Console.WriteLine("{0}\t{1}", Vector.Length, ElapsedSeconds.ToString("F4"));
                                 break;
 
                             case 3:
-                                for (int k = 0; k < ArraySize[i]; k+=1000000)
-                                {
-                                    LinearAvgInstr(Vector, k);
-                                    NumberOfTests++;
-                                }
-                                OpAssignment = OpAssignment / NumberOfTests;
-                                OpComparisonLT = OpComparisonLT / NumberOfTests;
-                                OpIncrement = OpIncrement / NumberOfTests;
-                                OpComparisonEQ = OpComparisonEQ / NumberOfTests;
-                                Console.WriteLine("{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}", Vector.Length, OpAssignment, OpComparisonLT, OpIncrement, OpComparisonEQ);
+                                LinearAvgInstr(Vector);
+                                Console.WriteLine("{0}\t\t{1}", Vector.Length, NumberOfOperations);
                                 break;
 
                             case 4:
-                                for (int k = 0; k < ArraySize[i]; k += 1000000)
-                                {
-                                    LinearAvgTime(Vector, k);
-                                    NumberOfTests++;
-                                }
-                                ElapsedSeconds = ElapsedSeconds / NumberOfTests;
-                                Console.WriteLine("{0}\t{1}", Vector.Length, ElapsedSeconds);
+                                LinearAvgTime(Vector);
+                                Console.WriteLine("{0}\t{1}", Vector.Length, ElapsedSeconds.ToString("F4"));
                                 break;
 
                             case 5:
-                                BinaryMaxInstr(Vector, ArraySize[i]);
-                                Console.WriteLine("{0}\t\t{1}\t\t{2}\t\t\t\t{3}\t\t{4}", Vector.Length, OpAssignment, OpComparisonLT, OpIncrement, OpComparisonEQ);
+                                BinaryMaxInstr(Vector);
+                                Console.WriteLine("{0}\t\t{1}", Vector.Length, NumberOfOperations);
                                 break;
 
                             case 6:
-                                BinaryMaxTime(Vector, ArraySize[i]);
-                                Console.WriteLine("{0}\t{1}", Vector.Length, ElapsedSeconds);
+                                BinaryMaxTime(Vector);
+                                Console.WriteLine("{0}\t{1}", Vector.Length, ElapsedSeconds.ToString("F4"));
                                 break;
 
                             case 7:
-                                for (int k = 0; k < ArraySize[i]; k += 1000000)
-                                {
-                                    BinaryAvgInstr(Vector, k);
-                                    NumberOfTests++;
-                                }
-                                OpAssignment = OpAssignment / NumberOfTests;
-                                OpComparisonLT = OpComparisonLT / NumberOfTests;
-                                OpIncrement = OpIncrement / NumberOfTests;
-                                OpComparisonEQ = OpComparisonEQ / NumberOfTests;
-                                Console.WriteLine("{0}\t\t{1}\t\t{2}\t\t\t\t{3}\t\t{4}", Vector.Length, OpAssignment, OpComparisonLT, OpIncrement, OpComparisonEQ);
+                                BinaryAvgInstr(Vector);
+                                Console.WriteLine("{0}\t\t{1}", Vector.Length, NumberOfOperations);
                                 break;
 
                             case 8:
-                                for (int k = 0; k < ArraySize[i]; k += 1000000)
-                                {
-                                    BinaryAvgTime(Vector, k);
-                                    NumberOfTests++;
-                                }
-                                ElapsedSeconds = ElapsedSeconds / NumberOfTests;
-                                Console.WriteLine("{0}\t{1}", Vector.Length, ElapsedSeconds);
+                                BinaryAvgTime(Vector);
+                                Console.WriteLine("{0}\t{1}", Vector.Length, ElapsedSeconds.ToString("F4"));
                                 break;
                         }
                     }
@@ -432,125 +309,17 @@ namespace Project_1
                     if (choice != 0)
                     {
                         Console.WriteLine("\n\n################################################################################################################");
-                        //Console.WriteLine("\nTestowanie zakońćzone, naciśnij dowolny przycisk, by móc ponownie dokonać wyboru");
-                        //Console.ReadKey();
                     }
-                    //Console.Clear();
                 }
                 else if (choice == 0)
                 {
-                    //Console.Clear();
                     Console.WriteLine("Koniec programu");
                 }
                 else
                 {
                     Console.Write("\n\n\n\nDokonałeś złego wyboru, naciśnij dowolny przycisk i spróbuj ponownie\n");
-                    //Console.ReadKey();
-                    //Console.Clear();
                 }
             } while (choice != 0);
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-public static void Main(string[] args)
-{
-    int choice = 0;
-    int[] ArraySize = new int[10];
-    int j = 0;
-
-    for (int i = 26843545; i <= 268435450; i += 26843545)
-    {
-        ArraySize[j++] = i;
-    }
-
-    do
-    {
-        Console.WriteLine("Jaką oprację chcesz wykonać?\n");
-        Console.WriteLine("1. Wyszukiwanie liniowe - pesymistyczne - instrumentacja");
-        Console.WriteLine("2. Wyszukiwanie liniowe - pesymistyczne - czas");
-        Console.WriteLine("0. Zakończ prorgram\n");
-        Console.Write("Twój wybór:");
-        choice = int.Parse(Console.ReadLine());
-        Console.WriteLine("\n");
-
-        if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5 || choice == 6 || choice == 7 || choice == 8)
-        {
-            switch (choice)
-            {
-                case 1:
-                case 3:
-                case 5:
-                case 7:
-                    Console.WriteLine("n\t\t\tOpAssignment\tOpComparisonLT\t\tOpIncrement\t\tOpComparisonEQ");
-                    break;
-                case 2:
-                case 4:
-                case 6:
-                case 8:
-                    Console.WriteLine("n\t\tElapsedSeconds");
-                    break;
-            }
-
-
-            for (int i = 0; i < ArraySize.Length; i++)
-            {
-                switch (choice)
-                {
-                    case 1:
-                        OpAssignment = 0;
-                        OpComparisonLT = 0;
-                        OpIncrement = 0;
-                        OpComparisonEQ = 0;
-                        LinearMaxInstr(ArraySize[i], ArraySize[i]);
-                        Console.WriteLine("{0}\t\t{1}\t\t{2}\t\t{3}\t\t{4}", ArraySize[i], OpAssignment, OpComparisonLT, OpIncrement, OpComparisonEQ);
-                        break;
-                    case 2:
-                        ElapsedSeconds = 0;
-                        LinearMaxTime(ArraySize[i], ArraySize[i]);
-                        Console.WriteLine("{0}\t{1}", ArraySize[i], ElapsedSeconds);
-                        break;
-                }
-            }
-
-            if (choice != 0)
-            {
-                Console.WriteLine("\n\nTestowanie zakońćzone, naciśnij dowolny przycisk, by móc ponownie dokonać wyboru");
-                Console.ReadKey();
-            }
-            Console.Clear();
-        }
-        else if (choice == 0)
-        {
-            Console.Clear();
-            Console.WriteLine("Koniec programu");
-        }
-        else
-        {
-            Console.Write("Dokonałeś złego wyboru, naciśnij dowolny przycisk i spróbuj ponownie");
-            Console.ReadKey();
-            Console.Clear();
-        }
-    } while (choice != 0);
-}*/
